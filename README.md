@@ -1,5 +1,5 @@
 # AutoXuetangX
-AutoXuetang script on tampermonkey
+AutoXuetang is script of video-autoplay on tampermonkey
 ## A.Setup
 #### 1.Install tampermonkey by .crx if you are in GFW(-_-)!
 ####   --to download tampermonkey.crx https://www.crx4chrome.com/down/755/crx/ 
