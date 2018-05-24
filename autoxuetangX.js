@@ -1,13 +1,14 @@
 // ==UserScript==
 // @name     学堂在线小助手注释版
-// @version    0.0.7
+// @version    0.0.8
 // @description  解放双手，自动播放
-// @author     1xin.1
-// require     http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js
+// @author     1xin
+// @require     http://code.jquery.com/jquery-latest.js
 // @noframes
 // @match    *://*.xuetangx.com/courses/*/courseware/*
 // @grant    GM_addStyle
 // @grant    GM.getValue
+// @namespace https://greasyfork.org/users/183871
 // ==/UserScript==
 
 (function() {
@@ -66,6 +67,8 @@
     //playVideo()    自动播放
     //stopVideo()    监测是否结束，到下一个视频
     //isVideoPage()  是否是视频页
+    //VideoQuality()  自动切换到低清，节省流量
+    //changeVideospeed() 自动二倍速播放，节省时间
     var autoPlayVideo={
         myVideo:null,
         playVideo:function(){
@@ -76,12 +79,14 @@
                     try
                     {
                         autoPlayVideo.myVideo = document.getElementsByTagName('video')[0];
-                        autoPlayVideo.myVideo.play();
+                        //autoPlayVideo.myVideo.play();
+                        autoPlayVideo.changeVideoQuality();
+                        autoPlayVideo.changeVideospeed();
                         autoPlayVideo.stopVideo();
                     }
                     catch(e)
                     {
-                        location.reload();
+                        //location.reload();
                     }
                 }else{
                     addNextButton.toNextButton();
@@ -90,8 +95,8 @@
         },
         stopVideo:function(){
             this.myVideo.addEventListener('ended',function(){
-            //alert('stop');
-            addNextButton.toNextButton();
+                //alert('stop');
+                addNextButton.toNextButton();
             });
         },
         isVideoPage:function(){
@@ -100,6 +105,16 @@
             }else{
                 return false;
             }
+        },
+        changeVideoQuality:function(){
+            var qualityDiv=$("div.xt_video_player_quality.xt_video_player_common.fr>ul");
+            var qualityButton=qualityDiv.children(":last");
+            qualityButton.trigger("click");
+        },
+        changeVideospeed:function(){
+            var speedDiv=$("div.xt_video_player_speed.xt_video_player_common.fr>ul");
+            var speedButton=speedDiv.children(":first");
+            speedButton.trigger("click");
         }
     };
     autoPlayVideo.playVideo();
