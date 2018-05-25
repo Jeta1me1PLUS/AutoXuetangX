@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name     学堂在线小助手注释版
-// @version    0.0.8
+// @version    0.0.8.1
 // @description  解放双手，自动播放
 // @author     1xin
 // @require     http://code.jquery.com/jquery-latest.js
@@ -39,19 +39,21 @@
     //增加下一个按钮，防止程序出错
     //addNextButton()增加下一个视频按钮
     //toNextButton()转到下一个视频地址
+    //addTips()提示信息
     var addNextButton={
         addButton:function(next_video_url){
-            var next_btn_html = '<li class="tonextvideo">';
+            var next_btn_html = '';
+            next_btn_html +='<li class="video-tracks video-download-button">';
             next_btn_html += '<a href="';
             next_btn_html +=next_video_url;
             next_btn_html += '">';
-            next_btn_html += '<span class="sr">下一个视频</span>Next';
+            next_btn_html += '跳转到下一个视频';
             next_btn_html += '</a>';
-            next_btn_html += '</li>';
+            next_btn_html +='</li>';
             //增加下一个视频按钮
-            var ul_tag = $("nav.sequence-bottom>ul");
+            var ul_tag = $("ul.wrapper-downloads");
             if (ul_tag) {
-                ul_tag.addClass("nextvideo").append(next_btn_html);
+                ul_tag.append(next_btn_html);
             }
         },
         toNextButton:function(){
@@ -59,6 +61,20 @@
                 window.location.href=getNextVideoUrl.getUrl();
             }else{
                 return 0;
+            }
+        },
+        addTips:function(){
+            var li_tag = $("ul.wrapper-downloads");
+            var tips_button = '';
+            tips_button += '<li class="video-tracks video-download-button">';
+            tips_button += '<a>';
+            tips_button += '<font color="red">';
+            tips_button += '再次强调：答题时请关掉脚本！！';
+            tips_button += '</font>';
+            tips_button += '</a>';
+            tips_button += '</li>';
+            if (li_tag) {
+                li_tag.append(tips_button);
             }
         }
     };
@@ -87,6 +103,7 @@
                     catch(e)
                     {
                         //location.reload();
+                        autoPlayVideo.myVideo.play();
                     }
                 }else{
                     addNextButton.toNextButton();
@@ -120,4 +137,5 @@
     autoPlayVideo.playVideo();
     var t=getNextVideoUrl.getUrl();
     addNextButton.addButton(t);
+    addNextButton.addTips();
 })();
