@@ -99,6 +99,7 @@
                         autoPlayVideo.changeVideoQuality();
                         autoPlayVideo.changeVideospeed();
                         autoPlayVideo.stopVideo();
+						$("div.xt_video_player_volume").children().click();
                     }
                     catch(e)
                     {
