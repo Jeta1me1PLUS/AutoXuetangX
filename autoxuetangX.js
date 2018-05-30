@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name     学堂在线小助手注释版
-// @version    0.0.8.1
+// @version    0.0.8.2
 // @description  解放双手，自动播放
 // @author     1xin
 // @require     http://code.jquery.com/jquery-latest.js
@@ -76,6 +76,20 @@
             if (li_tag) {
                 li_tag.append(tips_button);
             }
+        },
+        addVersion:function(){
+            var li_tag = $("ul.wrapper-downloads");
+            var tips_Version = '';
+            tips_Version += '<li class="video-tracks video-download-button">';
+            tips_Version += '<a>';
+            tips_Version += '<font color="blue">';
+            tips_Version += '版本0.0.8.2';
+            tips_Version += '</font>';
+            tips_Version += '</a>';
+            tips_Version += '</li>';
+            if (li_tag) {
+                li_tag.append(tips_Version);
+            }
         }
     };
     //视频播放
@@ -84,7 +98,8 @@
     //stopVideo()    监测是否结束，到下一个视频
     //isVideoPage()  是否是视频页
     //VideoQuality()  自动切换到低清，节省流量
-    //changeVideospeed() 自动二倍速播放，节省时间
+    //changeVideoSpeed() 自动二倍速播放，节省时间
+    //changeVideoVolume() 自动静音，节省……耳朵？
     var autoPlayVideo={
         myVideo:null,
         playVideo:function(){
@@ -97,7 +112,8 @@
                         autoPlayVideo.myVideo = document.getElementsByTagName('video')[0];
                         //autoPlayVideo.myVideo.play();
                         autoPlayVideo.changeVideoQuality();
-                        autoPlayVideo.changeVideospeed();
+                        autoPlayVideo.changeVideoSpeed();
+                        autoPlayVideo.changeVideoVolume();
                         autoPlayVideo.stopVideo();
                     }
                     catch(e)
@@ -128,14 +144,20 @@
             var qualityButton=qualityDiv.children(":last");
             qualityButton.trigger("click");
         },
-        changeVideospeed:function(){
+        changeVideoSpeed:function(){
             var speedDiv=$("div.xt_video_player_speed.xt_video_player_common.fr>ul");
             var speedButton=speedDiv.children(":first");
             speedButton.trigger("click");
+        },
+        changeVideoVolume:function(){
+            var VolumeDiv=$("div.xt_video_player_volume");
+            var VolumeButton=VolumeDiv.children(":first");
+            VolumeButton.trigger("click");
         }
     };
     autoPlayVideo.playVideo();
     var t=getNextVideoUrl.getUrl();
     addNextButton.addButton(t);
     addNextButton.addTips();
+    addNextButton.addVersion();
 })();
