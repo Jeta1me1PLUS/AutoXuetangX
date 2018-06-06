@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name     学堂在线小助手注释版
-// @version    0.0.8.2
+// @version    0.0.9.0
 // @description  解放双手，自动播放
 // @author     1xin
 // @require     http://code.jquery.com/jquery-latest.js
 // @noframes
 // @match    *://*.xuetangx.com/courses/*/courseware/*
+// @match    *://*.xuetangx.com/newcloud/dashboard*
 // @grant    GM_addStyle
 // @grant    GM.getValue
 // @namespace https://greasyfork.org/users/183871
@@ -83,7 +84,7 @@
             tips_Version += '<li class="video-tracks video-download-button">';
             tips_Version += '<a>';
             tips_Version += '<font color="blue">';
-            tips_Version += '版本0.0.8.2';
+            tips_Version += '版本0.0.9.0';
             tips_Version += '</font>';
             tips_Version += '</a>';
             tips_Version += '</li>';
@@ -155,9 +156,180 @@
             VolumeButton.trigger("click");
         }
     };
-    autoPlayVideo.playVideo();
-    var t=getNextVideoUrl.getUrl();
-    addNextButton.addButton(t);
-    addNextButton.addTips();
-    addNextButton.addVersion();
+    //一键
+    //addScore() 获取所有成绩
+    //addScoreTip（） 提示
+    //addScoreTable（） 成绩表
+    var addOneShotButton={
+        addScore:function(){
+            var li_tag = $("div.nav-menu > ul");
+            var tips_button = '';
+            tips_button += '<li id="mybutton">';
+            tips_button += '<a>';
+            tips_button += '<font color="red">';
+            tips_button += '所有成绩';
+            tips_button += '</font>';
+            tips_button += '</a>';
+            tips_button += '</li>';
+            if (li_tag) {
+                li_tag.append(tips_button);
+            }
+            $("#mybutton").click(function(){
+                //alert(allScore.scoreArray(apiUrl.getApiUrl())[0][0]);
+                //allScore.addTrTd(allScore.scoreArray(apiUrl.getApiUrl()));
+                //addOneShotButton.addScoreTip();
+                addOneShotButton.addScoreTable(allScore.addTrTd(allScore.scoreArray(apiUrl.getApiUrl())));
+            });
+        },
+        addAutoPlay:function(){
+            var li_tag = $("div.nav-menu > ul");
+            var tips_button = '';
+            tips_button += '<li>';
+            tips_button += '<a>';
+            tips_button += '<font color="red">';
+            tips_button += '一键播放';
+            tips_button += '</font>';
+            tips_button += '</a>';
+            tips_button += '</li>';
+            if (li_tag) {
+                li_tag.append(tips_button);
+            }
+        },
+        addScoreTip:function(){
+            var li_tag=$("div.row.container-search");
+            var tips_button = '';
+            tips_button +='<div>'
+            tips_button +='<h1>提示：获取所有成绩大概需要15秒时间</h1>'
+            tips_button += '</div>';
+            if (li_tag) {
+                li_tag. append(tips_button);
+            }
+        },
+        addScoreTable:function(tdtr){
+            var li_tag=$("div.row.container-search");
+            var tips_button = '';
+            tips_button +='<div class="row container-search">'
+            tips_button += '<table align="center" border="5">';
+            tips_button += '<tr><th><h3>课程名</h3></th><th><h3>答题总分</h3></th><th><h3><font color="red">答题得分</font></h3></th><th><h3>视频总分</h3></th><th><h3><font color="red">视频得分</font></h3></th></tr>';
+            tips_button += tdtr;
+            tips_button += '</table>';
+            tips_button += '</div>';
+            if (li_tag) {
+                li_tag. after(tips_button);
+            }
+        }
+    };
+    //将所有课程成绩构成数组
+    //scoreArray()  返回所有课程成绩构成的数组
+    //addTrTd()     将数组构成表格
+    var allScore={
+        scoreArray:function(apiArray){
+            var allScoreArray=new Array;
+            for(var i=0;i<apiArray.length ;i++){
+                allScoreArray.push(scoreJson.getScoreArray(apiUrl.getApiUrl()[i]));
+            }
+            return allScoreArray
+        },
+        addTrTd:function(allScoreArray){
+            var stringTrTd='';
+            for(var i=0;i<allScoreArray.length;i++){
+                stringTrTd+="<tr>";
+                for(var j=0;j<allScoreArray[0].length;j++){
+                    stringTrTd+="<td";
+                    if(j>0){
+                        stringTrTd+=" align='right' ";
+                    }
+                    stringTrTd+=">";
+                    stringTrTd+=allScoreArray[i][j];
+                    stringTrTd+="</td>";
+                }
+                stringTrTd+="</tr>";
+            }
+            //alert(stringTrTd);
+            return stringTrTd
+        }
+    }
+    //课程成绩对象
+    //getScoreJson()  获取成绩json
+    //ecodeJson()     解析json
+    //getScoreArray() 返回单个科目成绩数组
+    var scoreJson={
+        htmlobj:null,//成绩的json数据
+        //
+        course_name:null,//课程名
+        homeworkTotal:null,//题目总分
+        homeworkScore:null,//题目得分
+        videoTotal:null,//视频总分
+        videoScore:null,//视频总分
+        //利用ajax获取课程成绩
+        getScoreJson:function(scoreUrl){
+            this.htmlobj=$.ajax({
+                url:scoreUrl,
+                async:false
+            });
+        },
+        //解析返回json
+        decodeJson:function(){
+            //alert(this.htmlobj.responseText);
+            var jsonData=JSON.parse(this.htmlobj.responseText);
+            this.course_name=jsonData.course_name;
+            this.homeworkTotal=jsonData.progress_items[0].total;
+            this.homeworkScore=jsonData.progress_items[0].score;
+            this.videoTotal=jsonData.progress_items[1].total;
+            this.videoScore=jsonData.progress_items[1].score;
+            //alert(this.course_name+this.homeworkTotal+this.homeworkScore+this.videoTotal+this.videoScore);
+        },
+        //返回成绩数组
+        getScoreArray:function(scoreUrl){
+            var scoreArr = new Array;
+            this.getScoreJson(scoreUrl);
+            this.decodeJson();
+            scoreArr[0]=this.course_name;
+            scoreArr[1]=this.homeworkTotal;
+            scoreArr[2]=this.homeworkScore;
+            scoreArr[3]=this.videoTotal;
+            scoreArr[4]=this.videoScore;
+            return scoreArr;
+        }
+    };
+    //获取每个课程成绩的api序号
+    //getApiUrl()返回所有课程成绩api地址
+    //Array  序号api地址
+    //
+    //
+    var apiUrl={
+        getApiUrl:function(){
+            var valArr = new Array;
+            var url=$("li.item-score > div > span > a").each(function(i){
+                 valArr[i] = "/newcloud/api/course_score/"+$(this).attr("href").split("termcourse_id=")[1]+"/";
+             });
+            var priv = valArr.join(',');
+            //alert(valArr[1]);
+            return valArr;
+             //url.css("background-color","red");
+            //alert(url.attr("href"));
+        }
+    };
+    var videoSite = window.location.href;
+    var reVideo = /courses/i;
+    var reScore = /newcloud/i;
+    //视频页
+    if(reVideo.test(videoSite)){
+        autoPlayVideo.playVideo();
+        var t=getNextVideoUrl.getUrl();
+        addNextButton.addButton(t);
+        addNextButton.addTips();
+        addNextButton.addVersion();
+    }
+    //成绩页
+    if(reScore.test(videoSite)){
+        setTimeout(function(){
+                addOneShotButton.addScore();
+                //addOneShotButton.addAutoPlay();
+                addOneShotButton.addScoreTip()
+                //addOneShotButton.addScoreTable();
+                //scoreJson.decodeJson();
+            },1000)
+    }
+
 })();
