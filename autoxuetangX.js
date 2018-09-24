@@ -116,6 +116,7 @@
                         autoPlayVideo.changeVideoSpeed();
                         autoPlayVideo.changeVideoVolume();
                         autoPlayVideo.stopVideo();
+						$("div.xt_video_player_volume").children().click();
                     }
                     catch(e)
                     {
